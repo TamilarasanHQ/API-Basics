@@ -1,5 +1,5 @@
-import model, schemas
-from database import engine, SessionLocal
+from . import model, schemas
+from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import time
 from fastapi import Body, FastAPI, Response, status, HTTPException, Depends
@@ -80,7 +80,7 @@ def create_posts(post: schemas.CreatePost, db: Session = Depends(get_db)):
         raise e
     
 @app.get("/get_post/{id}")
-def get_posts(id: int, response : Response, db: Session = Depends(get_db)):
+def get_posts(id: int, response : Response, db: Session = Depends(get_db), response_model=schemas.RespPost):
     post = db.query(model.Post).filter(model.Post.id == id).first()
 
     if not post:
@@ -103,7 +103,7 @@ def delete_post(id: int, db:Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/update_post/{id}")
-def update_post(id: int, post: schemas.CreatePost, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.CreatePost, db: Session = Depends(get_db), response_model=schemas.RespPost):
     posts_query = db.query(model.Post).filter(model.Post.id == id)
     posts = posts_query.first()
     
